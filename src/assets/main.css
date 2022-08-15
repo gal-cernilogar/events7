@@ -1,0 +1,76 @@
+@import "./base.css";
+
+::-webkit-scrollbar {
+  width: 0.5em;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--c-gray);
+  border-radius: 1em;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--c-white);
+}
+
+#app {
+  width: 100%;
+  max-width: 1280px;
+  height: 100vh;
+  margin: 0 auto;
+  padding: 2rem;
+
+  font-weight: normal;
+}
+
+a,
+.green {
+  text-decoration: none;
+  color: var(--color-header);
+  transition: 0.4s;
+}
+
+button {
+  display: inline-block;
+  border: none;
+  padding: 0.5rem 1rem;
+  margin: 0;
+  border-radius: 5rem;
+  text-decoration: none;
+  background: #777777;
+  color: #ffffff;
+  font-family: Poppins, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  /* transition: background 250ms ease-in-out, transform 150ms ease; */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.round-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  fill: var(--color-text);
+  padding: 0.5rem;
+  border-radius: 50%;
+}
+
+@media (hover: hover) {
+  a:hover {
+    color: var(--color-highlight);
+  }
+
+  button:hover {
+    background-color: #999999;
+  }
+}
+
+@media (min-width: 1024px) {
+}
