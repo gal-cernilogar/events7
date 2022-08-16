@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
 import { useEventsStore } from "@/stores/events";
 import {
   collection,
@@ -18,28 +17,6 @@ const eventsStore = useEventsStore();
 const props = defineProps<{
   event: EventType;
 }>();
-
-// watch(eventsStore.events, (newEvents, oldEvents) => {
-//   if (newEvents.length < oldEvents.length) {
-//     console.log("New length is shorter than old.");
-//   }
-// });
-
-// watch(eventsStore.getOtherEvents(props.event), (otherEvents) => {
-//   const index = eventsStore.events.findIndex((e) => e === props.event);
-//   eventsStore.events[index].relatedEvents?.filter((relatedEvent: string) => {
-//     otherEvents.forEach((event) => event.name === relatedEvent);
-//   });
-// });
-
-// const relatedEventsFiltered = computed(() => {
-//   const index = eventsStore.events.findIndex((e) => e === props.event);
-//   return eventsStore.events[index].relatedEvents?.filter((eventName) => {
-//     eventsStore
-//       .getOtherEvents(props.event)
-//       .forEach((event) => event.name === eventName);
-//   });
-// });
 
 const createEvent = (event: EventType) => {
   addDoc(collection(db, "events"), {
@@ -96,19 +73,6 @@ const deleteEvent = (event: EventType) => {
   }
   event.isBeingEdited = false;
   eventsStore.editing = false;
-  // this.events.forEach((e) => {
-  //   e.relatedEvents = e.relatedEvents?.filter((relatedEvent) => {
-  //     this.events.forEach((ev) => {
-  //       return ev.name !== relatedEvent;
-  //     });
-  //   });
-  // });
-  // this.events.forEach((e) => {
-  //   e.relatedEvents = e.relatedEvents?.filter((relatedEvent) => {
-  //     console.log(event.name !== relatedEvent);
-  //     event.name !== relatedEvent;
-  //   });
-  // });
 };
 </script>
 
