@@ -13,7 +13,7 @@ const eventsCollectionQuery = query(eventsCollectionRef, orderBy("id"));
 
 onMounted(() => {
   onSnapshot(eventsCollectionQuery, (querySnapshot) => {
-    const fbEvents: any = [];
+    const fbEvents: EventType[] = [];
     querySnapshot.forEach((doc) => {
       const event = {
         id: doc.data().id,
@@ -29,6 +29,7 @@ onMounted(() => {
       fbEvents.push(event);
     });
     eventsStore.events = fbEvents;
+    eventsStore.editing = false; // THIS REQUIRES FIXING (for now it fixes hard lock but enables forbidden buttons if editing an event while another client causes a change in db)
   });
 });
 </script>

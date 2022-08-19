@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed, ref } from "vue";
 import { useEventsStore } from "@/stores/events";
 import {
   collection,
@@ -18,6 +19,47 @@ const props = defineProps<{
   event: EventType;
 }>();
 
+// const relatedEvents = ref(props.event.relatedEvents);
+// const relatedEventsUI = computed({
+//   get() {
+//     return relatedEvents.value;
+//   },
+//   set(events) {
+//     relatedEvents.value = events;
+//   },
+// });
+
+const relatedEventsUI = computed({
+  get() {
+    return thisEvent.value.relatedEvents;
+  },
+  set(events) {
+    thisEvent.value.relatedEvents = events;
+  },
+});
+
+// const relatedEventsFiltered = computed(() =>
+//   relatedEvents.value.filter((eventName) =>
+//     eventsStore
+//       .getOtherEvents(props.event)
+//       .forEach((event) => event.name === eventName)
+//   )
+// );
+
+const thisEvent = ref<EventType>({
+  id: props.event.id,
+  name: props.event.name,
+  description: props.event.description,
+  type: props.event.type,
+  priority: props.event.priority,
+  relatedEvents: props.event.relatedEvents,
+  docId: props.event.docId,
+  isBeingEdited: props.event.isBeingEdited,
+  isNew: props.event.isNew,
+});
+
+// props.event.relatedEvents.filter((eventName) => eventsStore.events.forEach((event) => event.name === eventName))
+
 const createEvent = (event: EventType) => {
   addDoc(collection(db, "events"), {
     id: event.id,
@@ -35,6 +77,7 @@ const createEvent = (event: EventType) => {
 
 const editEvent = (event: EventType) => {
   event.isBeingEdited = true;
+  props.event.isBeingEdited = true;
   eventsStore.editing = true;
 };
 
@@ -48,21 +91,25 @@ const updateEvent = (event: EventType) => {
     "related-events": event.relatedEvents,
   });
   event.isBeingEdited = false;
+  props.event.isBeingEdited = false;
   eventsStore.editing = false;
 };
 
 const onSubmit = () => {
   // Check for ID uniqueness
   for (const event of eventsStore.getOtherEvents(props.event)) {
-    if (props.event.id === event.id) {
-      alert("Event ID must be unique.");
-      return;
-    }
+    if (thisEvent.value.id === event.id)
+      return alert("Event ID must be unique.");
   }
-  if (props.event.isBeingEdited && props.event.isNew)
-    return createEvent(props.event);
-  if (props.event.isBeingEdited && !props.event.isNew)
-    return updateEvent(props.event);
+  if (
+    Number.isNaN(Number(thisEvent.value.id)) ||
+    Number(thisEvent.value.id) < 0
+  )
+    return alert("Event ID must be an integer from 0 to 999");
+  if (thisEvent.value.isBeingEdited && thisEvent.value.isNew)
+    return createEvent(thisEvent.value);
+  if (thisEvent.value.isBeingEdited && !thisEvent.value.isNew)
+    return updateEvent(thisEvent.value);
 };
 
 const deleteEvent = (event: EventType) => {
@@ -71,7 +118,6 @@ const deleteEvent = (event: EventType) => {
   } else {
     deleteDoc(doc(db, "events", event.docId));
   }
-  event.isBeingEdited = false;
   eventsStore.editing = false;
 };
 </script>
@@ -82,7 +128,7 @@ const deleteEvent = (event: EventType) => {
       <div class="event-field">
         <label for="id">ID</label>
         <input
-          v-model="props.event.id"
+          v-model="thisEvent.id"
           type="text"
           class="text-input"
           id="id"
@@ -90,46 +136,46 @@ const deleteEvent = (event: EventType) => {
           autocomplete="off"
           maxlength="3"
           required
-          v-if="props.event.isBeingEdited"
+          v-if="thisEvent.isBeingEdited"
         />
-        <p v-else>{{ props.event.id }}</p>
+        <p v-else>{{ thisEvent.id }}</p>
       </div>
       <div class="event-field">
         <label for="name">Name</label>
         <input
-          v-model="props.event.name"
+          v-model="thisEvent.name"
           class="text-input"
           id="name"
           placeholder="Name"
           autocomplete="off"
           required
-          v-if="props.event.isBeingEdited"
+          v-if="thisEvent.isBeingEdited"
         />
-        <p v-else>{{ props.event.name }}</p>
+        <p v-else>{{ thisEvent.name }}</p>
       </div>
       <div class="event-field">
         <label for="description">Description</label>
         <textarea
-          v-model="props.event.description"
+          v-model="thisEvent.description"
           class="text-input"
           id="description"
           placeholder="Description"
           rows="1"
           required
-          v-if="props.event.isBeingEdited"
+          v-if="thisEvent.isBeingEdited"
         >
         </textarea>
-        <p v-else>{{ props.event.description }}</p>
+        <p v-else>{{ thisEvent.description }}</p>
       </div>
       <div class="event-field">
         <label for="type">Type</label>
         <select
-          v-model="props.event.type"
+          v-model="thisEvent.type"
           class="dropdown"
           name="type"
           id="type"
           required
-          v-if="props.event.isBeingEdited"
+          v-if="thisEvent.isBeingEdited"
         >
           <option disabled value=""></option>
           <option value="crosspromo">crosspromo</option>
@@ -137,60 +183,60 @@ const deleteEvent = (event: EventType) => {
           <option value="app">app</option>
           <option value="ads">ads</option>
         </select>
-        <p v-else>{{ props.event.type }}</p>
+        <p v-else>{{ thisEvent.type }}</p>
       </div>
       <div class="event-field">
         <label for="priority">Priority</label>
         <select
-          v-model="props.event.priority"
+          v-model="thisEvent.priority"
           class="dropdown"
           name="priority"
           id="priority"
           required
-          v-if="props.event.isBeingEdited"
+          v-if="thisEvent.isBeingEdited"
         >
           <option disabled value=""></option>
           <option v-for="i in 11" :value="i - 1">{{ i - 1 }}</option>
         </select>
-        <p v-else>{{ props.event.priority }}</p>
+        <p v-else>{{ thisEvent.priority }}</p>
       </div>
       <div class="event-field">
         <label for="related-events">Related Events</label>
-        <ul class="related-events-choices" v-if="props.event.isBeingEdited">
+        <ul class="related-events-choices" v-if="thisEvent.isBeingEdited">
           <li v-for="event in eventsStore.getOtherEvents(props.event)">
             <input
               type="checkbox"
               :value="event.name"
-              v-model="props.event.relatedEvents"
+              v-model="relatedEventsUI"
             />
             {{ event.name }}
           </li>
         </ul>
         <ul class="related-events-list" v-else>
-          <li v-for="event in props.event.relatedEvents">
+          <li v-for="event in thisEvent.relatedEvents">
             {{ event }}
           </li>
         </ul>
       </div>
       <div class="event-field event-buttons">
         <button
-          v-if="props.event.isBeingEdited"
+          v-if="thisEvent.isBeingEdited"
           class="round-button update-button"
         >
           <IconDone />
         </button>
         <button
           v-else
-          @click="editEvent(props.event)"
+          @click="editEvent(thisEvent)"
           class="round-button edit-button"
           :disabled="eventsStore.editing"
         >
           <IconEdit />
         </button>
         <button
-          @click="deleteEvent(props.event)"
+          @click="deleteEvent(thisEvent)"
           class="round-button delete-button"
-          :disabled="eventsStore.editing && !props.event.isBeingEdited"
+          :disabled="eventsStore.editing && !thisEvent.isBeingEdited"
         >
           <IconDelete />
         </button>

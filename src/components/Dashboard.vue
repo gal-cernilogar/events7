@@ -34,10 +34,18 @@ const addEvent = () => {
     </div>
     <div class="dashboard-content">
       <ul class="event-list">
-        <Event v-for="event in eventsStore.events" :event="event" />
+        <Event
+          v-for="event in eventsStore.events"
+          :key="event.id"
+          :event="event"
+        />
       </ul>
       <ul class="event-list">
-        <Event v-for="event in eventsStore.newEvent" :event="event" />
+        <Event
+          v-for="event in eventsStore.newEvent"
+          :key="event.id"
+          :event="event"
+        />
       </ul>
       <button
         @click="addEvent"
