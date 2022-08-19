@@ -3,8 +3,8 @@ import { defineStore } from "pinia";
 export const useEventsStore = defineStore({
   id: "events",
   state: () => ({
-    events: [] as EventsType[],
-    newEvent: [] as EventsType[],
+    events: [] as EventType[],
+    newEvent: [] as EventType[],
     editing: false,
   }),
   getters: {
